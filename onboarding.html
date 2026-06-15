@@ -6,14 +6,14 @@
 <title>api-contract-test — Onboarding</title>
 <style>
   :root{
-    --bg:#0f1729; --card:#172033; --card2:#1f2a40; --ink:#e8eef7; --muted:#9fb0c9;
-    --line:#2b3a55; --accent:#4f9dff; --good:#37d399; --warn:#f5b945; --bad:#ff6b6b;
-    --chip:#243349;
+    --bg:#ffffff; --card:#ffffff; --card2:#f6f8fc; --ink:#15233b; --muted:#5a6b85;
+    --line:#e2e8f3; --accent:#2563eb; --good:#0f9d6b; --warn:#b9770a; --bad:#dc2626;
+    --chip:#eaf1ff;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
-    background:linear-gradient(180deg,#0b1220,#0f1729 40%);
+    background:linear-gradient(180deg,#f4f7fc,#ffffff 40%);
     color:var(--ink);
     font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,"Noto Sans Arabic",sans-serif;
     line-height:1.75; min-height:100vh;
@@ -37,7 +37,7 @@
     background:transparent;color:var(--muted);border:0;padding:9px 16px;cursor:pointer;
     font-size:14px;font-weight:600;transition:.15s;
   }
-  .toggle button.active{background:var(--accent);color:#04122b}
+  .toggle button.active{background:var(--accent);color:#fff}
   .hero{
     background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:22px;
   }
@@ -68,7 +68,7 @@
   html[dir=rtl] .dims li{padding:12px 48px 12px 14px}
   .dims li::before{
     content:counter(d);position:absolute;inset-inline-start:12px;top:12px;
-    width:26px;height:26px;border-radius:8px;background:var(--accent);color:#04122b;
+    width:26px;height:26px;border-radius:8px;background:var(--accent);color:#fff;
     display:grid;place-items:center;font-weight:800;font-size:14px;
   }
   .dims li b{color:var(--ink)} .dims li span{color:var(--muted)}
@@ -87,7 +87,7 @@
   .steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start}
   .steps li::before{
     content:counter(s);flex:0 0 auto;width:28px;height:28px;border-radius:50%;
-    background:linear-gradient(135deg,var(--accent),#7c5cff);color:#04122b;
+    background:linear-gradient(135deg,var(--accent),#7c5cff);color:#fff;
     display:grid;place-items:center;font-weight:800;
   }
   .diagram{text-align:center;margin:6px 0 2px}
@@ -95,7 +95,7 @@
   .safety li{margin:8px 0}
   .safety .x{color:var(--bad);font-weight:800;margin-inline-end:6px}
   .safety .ok{color:var(--good);font-weight:800;margin-inline-end:6px}
-  code{background:#0c1424;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px}
+  code{background:var(--card2);color:#b3146b;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px}
   footer{color:var(--muted);font-size:13px;text-align:center;margin-top:26px}
   a{color:var(--accent)}
   [data-lang]{display:none}
@@ -163,21 +163,21 @@
           </linearGradient>
         </defs>
         <!-- UI layer -->
-        <rect x="40" y="30" width="680" height="46" rx="10" fill="#1f2a40" stroke="#2b3a55"/>
-        <text x="380" y="59" fill="#9fb0c9" font-size="15" text-anchor="middle" font-family="sans-serif">UI / Screens  —  covered by UI tests</text>
+        <rect x="40" y="30" width="680" height="46" rx="10" fill="#f6f8fc" stroke="#e2e8f3"/>
+        <text x="380" y="59" fill="#5a6b85" font-size="15" text-anchor="middle" font-family="sans-serif">UI / Screens  —  covered by UI tests</text>
         <!-- arrow -->
-        <line x1="380" y1="80" x2="380" y2="104" stroke="#2b3a55" stroke-width="2"/>
-        <polygon points="380,112 374,102 386,102" fill="#2b3a55"/>
+        <line x1="380" y1="80" x2="380" y2="104" stroke="#c2cde0" stroke-width="2"/>
+        <polygon points="380,112 374,102 386,102" fill="#c2cde0"/>
         <!-- API layer (highlighted) -->
         <rect x="40" y="116" width="680" height="56" rx="12" fill="url(#g1)"/>
-        <text x="380" y="142" fill="#04122b" font-size="16" font-weight="700" text-anchor="middle" font-family="sans-serif">API CONTRACT  ←  api-contract-test</text>
-        <text x="380" y="161" fill="#04122b" font-size="12" text-anchor="middle" font-family="sans-serif">schema · status · authZ/IDOR · idempotency · pagination · input · drift</text>
+        <text x="380" y="142" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" font-family="sans-serif">API CONTRACT  ←  api-contract-test</text>
+        <text x="380" y="161" fill="#ffffff" font-size="12" text-anchor="middle" font-family="sans-serif">schema · status · authZ/IDOR · idempotency · pagination · input · drift</text>
         <!-- arrow -->
-        <line x1="380" y1="176" x2="380" y2="196" stroke="#2b3a55" stroke-width="2"/>
-        <polygon points="380,204 374,194 386,194" fill="#2b3a55"/>
+        <line x1="380" y1="176" x2="380" y2="196" stroke="#c2cde0" stroke-width="2"/>
+        <polygon points="380,204 374,194 386,194" fill="#c2cde0"/>
         <!-- DB -->
-        <rect x="240" y="206" width="280" height="28" rx="8" fill="#172033" stroke="#2b3a55"/>
-        <text x="380" y="225" fill="#9fb0c9" font-size="13" text-anchor="middle" font-family="sans-serif">Database / Services</text>
+        <rect x="240" y="206" width="280" height="28" rx="8" fill="#f6f8fc" stroke="#e2e8f3"/>
+        <text x="380" y="225" fill="#5a6b85" font-size="13" text-anchor="middle" font-family="sans-serif">Database / Services</text>
       </svg>
     </div>
     <p data-lang="ar" style="color:var(--muted);text-align:center;font-size:13px;margin-top:6px">الطبقة المضيئة هي ما تختبره هذه الـ skill — الطبقة التي لا تراها الواجهة.</p>
