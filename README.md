@@ -4,6 +4,8 @@ A portable, agent-agnostic **skill** for testing an HTTP/JSON API layer *as a co
 
 It validates live responses against an OpenAPI/JSON Schema, checks status codes, per-endpoint authorization (object-level authZ / IDOR / BOLA), idempotency, pagination, input boundaries, and versioning drift. The goal is to catch silent API breaks — a renamed field, a leaked record, a double charge — at the source, before they reach a user or a downstream integration.
 
+> 👋 **New to this skill? Start with [ONBOARDING.md](ONBOARDING.md)** — purpose, the gap it fills, and why a QA team should use it (Arabic + English).
+
 ## Why API-layer testing
 
 Most automated quality work is UI-first. When a change breaks the API contract, the UI can hide the failure or surface it late. Testing the API directly:

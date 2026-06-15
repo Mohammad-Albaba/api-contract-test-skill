@@ -1,0 +1,97 @@
+# دليل التعريف بـ skill اختبار عقود الـ API (api-contract-test)
+
+> ملف تعريفي لفريق الجودة. اقرأه قبل أول استخدام — يشرح **ما الهدف، لماذا تستخدمها، وأي فجوة تسدّها** — لا أكواد ولا إعدادات هنا. التفاصيل التشغيلية في [`SKILL.md`](SKILL.md) و [`README.md`](README.md).
+
+---
+
+## ما هي هذه الـ skill في جملة واحدة
+
+أداة تختبر **طبقة الـ API مباشرة كعقد (contract)** — أي تتأكد أن الـ backend يُرجِع ويفرض ما اتفقنا عليه فعلاً — **بمعزل تام عن الواجهة (UI)**.
+
+---
+
+## المشكلة التي نعيشها اليوم (الفجوة)
+
+أغلب اختباراتنا تبدأ من الواجهة: نفتح الشاشة، نضغط، ونرى النتيجة. المشكلة أن الواجهة **تخفي** أعطال الـ API أو تُظهرها متأخرة:
+
+- حقل في الـ response **تغيّر اسمه أو نوعه** → الواجهة قد لا تنهار، لكن تطبيق الموبايل أو خدمة أخرى تنكسر بصمت.
+- **status code خاطئ** (مثلاً `200` بدل `403`) → الواجهة تخفيه، لكن الصلاحية مكسورة فعلاً.
+- مستخدم يقدر يقرأ **طلب عميل آخر** بتغيير رقم في الرابط (تسرّب بيانات) → الواجهة لا تُظهر هذا أبداً.
+- نداء دفع تكرّر مرتين فسحب المبلغ **مرتين** → لا تراه في اختبار الشاشة العادي.
+
+**الخلاصة:** عندنا تغطية ممتازة لـ "ما يراه المستخدم"، وفجوة في **"ما يحدث فعلاً تحت الواجهة"**. هذه الـ skill تسدّ تلك الفجوة بالضبط.
+
+---
+
+## لماذا يجب أن تستخدمها
+
+| السبب | الفائدة العملية |
+|---|---|
+| **تكشف الأعطال الصامتة عند مصدرها** | تمسك drift العقد قبل ما يوصل لمستخدم أو لتكامل خارجي |
+| **تثبت الصلاحيات أسرع وأدقّ** | فحص الـ authorization على مستوى الـ API أسرع وأوثق من النقر عبر عشر شاشات |
+| **خفيفة وسريعة** | لا تحتاج متصفّحاً ولا جهازاً — طلبات HTTP فقط، فتُعاد بسهولة في كل سبرنت |
+| **تحمي المال والثقة** | تمسك double-charge، تسرّب البيانات (IDOR)، وكسر العقود بين الخدمات |
+| **تتكامل مع شغلنا الحالي** | نتائجها دليل جاهز لقرار GO/NO-GO، وتُضاف لسويت الـ regression |
+
+---
+
+## ما الذي تفحصه فعلاً (الأبعاد السبعة)
+
+1. **مطابقة الـ Schema** — هل الـ response بنفس الشكل المتفق عليه (حقول، أنواع، enums)؟
+2. **عقد الـ Status والأخطاء** — هل الأكواد صحيحة (`200/400/401/403/404`) وشكل الخطأ ثابت؟
+3. **المصادقة والصلاحيات (AuthN/AuthZ + IDOR/BOLA)** — هل يقدر مستخدم يصل لبيانات أو أفعال ليست له؟
+4. **Idempotency والآثار الجانبية** — هل تكرار نفس الكتابة يطبّقها مرّتين (دفع مزدوج)؟
+5. **الترقيم والتصفية (Pagination)** — هل الحدود والمؤشرات والعدّادات تتصرّف صح؟
+6. **حدود الإدخال** — هل المدخلات الخاطئة/الضخمة/الخبيثة تُرفض بأمان دون `500` أو تسريب؟
+7. **التغيّر مقابل الأساس (Versioning drift)** — هل كُسر شيء مقارنةً بالـ baseline المحفوظ؟
+
+> كل نتيجة تُصنّف: `pass` (سليم) / `drift` (تغيّر يحتاج انتباه) / `break` (مكسور ويضرّ).
+
+---
+
+## متى تستخدمها (أمثلة من شغلنا)
+
+- *"اختبر endpoints الـ checkout مقابل ملف OpenAPI وتأكد ما في حقل ناقص أو نوع مختلف."*
+- *"تأكد إن `role=user` يرجع `403` مش `200` على `DELETE /admin/orders/{id}`."*
+- *"تحقق إن `POST /payments` لا يسحب مرتين عند تكرار نفس الـ idempotency-key."*
+- *"قبل ما نطلق نسخة الموبايل، افحص عقد الـ backend."*
+
+## متى **لا** تستخدمها
+
+- ليست أداة **أداء/حِمل** (load testing) → استخدم أداة الأداء.
+- ليست **اختبار اختراق كامل** (pentest) → للفحص الأمني المنهجي استخدم مسار الأمان عندنا.
+- ليست بديلاً عن اختبار الواجهة → هي **مكمّلة** له، تغطّي الطبقة التي لا يراها.
+
+---
+
+## كيف تبدأ خلال 3 خطوات
+
+1. **اقرأ** هذا الملف ثم [`SKILL.md`](SKILL.md) لفهم سير العمل والحدود.
+2. **جهّز معلومات النطاق:** رابط بيئة staging مصرّح بها + طريقة المصادقة (token/header) + الحسابات/الأدوار للاختبار. **الأسرار في متغيّرات البيئة فقط — لا تكتبها في الريبو أبداً.**
+3. **شغّلها على endpoint واحد أولاً** (مثلاً `GET /orders/{id}` للـ schema + IDOR) كـ smoke test، ثم وسّع النطاق.
+
+> مثال كامل محلول خطوة بخطوة في [`references/example-run.md`](references/example-run.md) — يكشف فيه IDOR ودفع مزدوج بأدلة request/response.
+
+---
+
+## قواعد الأمان (مهمة للجميع)
+
+- ❌ لا تشغّل نداءات تُعدّل البيانات على **production** أبداً — staging فقط.
+- ❌ لا تكتب tokens أو مفاتيح في الريبو أو في الأدلة المحفوظة — تُقرأ من البيئة وتُعتّم في كل التقاطات.
+- ✅ كل نتيجة `break`/`drift` لازم تحمل **دليلاً** (request + response معتّم + أثر تجاري بجملة واحدة).
+
+---
+
+## English Summary (for the public repo)
+
+**What:** a portable, agent-agnostic skill that tests an HTTP/JSON API **as a contract**, independent of any UI.
+
+**Gap it fills:** UI-first testing hides API breaks — a renamed field, a wrong status code, a leaked record (IDOR), a double charge. This skill catches them at the source.
+
+**Why use it:** finds silent breaks early, proves authorization faster than clicking through screens, runs without a browser (cheap to repeat), and protects money and trust.
+
+**Checks:** schema conformance · status/error contract · authN/authZ (incl. IDOR/BOLA) · idempotency · pagination · input boundaries · versioning drift. Each result is `pass` / `drift` / `break` with evidence.
+
+**Not for:** load testing or full pentesting; it complements UI testing, it doesn't replace it.
+
+**Start:** read [`SKILL.md`](SKILL.md), prepare a staging base URL + auth (secrets in env only), run one endpoint as a smoke test, then widen. See [`references/example-run.md`](references/example-run.md) for a worked example.
