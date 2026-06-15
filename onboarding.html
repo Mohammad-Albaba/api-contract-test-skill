@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>api-contract-test — Onboarding</title>
+<style>
+  :root{
+    --bg:#0f1729; --card:#172033; --card2:#1f2a40; --ink:#e8eef7; --muted:#9fb0c9;
+    --line:#2b3a55; --accent:#4f9dff; --good:#37d399; --warn:#f5b945; --bad:#ff6b6b;
+    --chip:#243349;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:linear-gradient(180deg,#0b1220,#0f1729 40%);
+    color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,"Noto Sans Arabic",sans-serif;
+    line-height:1.75; min-height:100vh;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:24px 20px 64px}
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    flex-wrap:wrap;margin-bottom:20px;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c5cff);
+    display:grid;place-items:center;font-size:22px;flex:0 0 auto;
+  }
+  .brand h1{font-size:20px;margin:0}
+  .brand .sub{color:var(--muted);font-size:13px}
+  .toggle{
+    display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card);
+  }
+  .toggle button{
+    background:transparent;color:var(--muted);border:0;padding:9px 16px;cursor:pointer;
+    font-size:14px;font-weight:600;transition:.15s;
+  }
+  .toggle button.active{background:var(--accent);color:#04122b}
+  .hero{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:22px;
+  }
+  .hero .tag{
+    display:inline-block;background:var(--chip);color:var(--accent);border-radius:999px;
+    padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:12px;letter-spacing:.3px;
+  }
+  .hero h2{margin:0 0 8px;font-size:26px}
+  .hero p{margin:0;color:var(--muted);font-size:16px}
+  section{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:18px;
+  }
+  section h3{margin:0 0 12px;font-size:18px;display:flex;align-items:center;gap:10px}
+  section h3 .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+  p{margin:0 0 10px}
+  ul{margin:6px 0 4px;padding-inline-start:22px}
+  li{margin:6px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}}
+  .benefit{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .benefit b{display:block;margin-bottom:4px;color:var(--ink)}
+  .benefit span{color:var(--muted);font-size:14px}
+  .dims{counter-reset:d;list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  .dims li{
+    counter-increment:d;background:var(--card2);border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px 12px 48px;position:relative;
+  }
+  html[dir=rtl] .dims li{padding:12px 48px 12px 14px}
+  .dims li::before{
+    content:counter(d);position:absolute;inset-inline-start:12px;top:12px;
+    width:26px;height:26px;border-radius:8px;background:var(--accent);color:#04122b;
+    display:grid;place-items:center;font-weight:800;font-size:14px;
+  }
+  .dims li b{color:var(--ink)} .dims li span{color:var(--muted)}
+  .verdicts{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .pill{border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px;border:1px solid}
+  .pill.good{color:var(--good);border-color:var(--good);background:rgba(55,211,153,.08)}
+  .pill.warn{color:var(--warn);border-color:var(--warn);background:rgba(245,185,69,.08)}
+  .pill.bad{color:var(--bad);border-color:var(--bad);background:rgba(255,107,107,.08)}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.twocol{grid-template-columns:1fr}}
+  .box{border-radius:12px;padding:14px;border:1px solid var(--line)}
+  .box.do{background:rgba(55,211,153,.06);border-color:rgba(55,211,153,.4)}
+  .box.dont{background:rgba(255,107,107,.06);border-color:rgba(255,107,107,.4)}
+  .box h4{margin:0 0 8px;font-size:15px}
+  .steps{list-style:none;counter-reset:s;padding:0;margin:0;display:grid;gap:10px}
+  .steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start}
+  .steps li::before{
+    content:counter(s);flex:0 0 auto;width:28px;height:28px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),#7c5cff);color:#04122b;
+    display:grid;place-items:center;font-weight:800;
+  }
+  .diagram{text-align:center;margin:6px 0 2px}
+  .diagram svg{max-width:100%;height:auto}
+  .safety li{margin:8px 0}
+  .safety .x{color:var(--bad);font-weight:800;margin-inline-end:6px}
+  .safety .ok{color:var(--good);font-weight:800;margin-inline-end:6px}
+  code{background:#0c1424;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px}
+  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:26px}
+  a{color:var(--accent)}
+  [data-lang]{display:none}
+  body[data-active="ar"] [data-lang="ar"]{display:revert}
+  body[data-active="en"] [data-lang="en"]{display:revert}
+</style>
+</head>
+<body data-active="ar">
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">🔌</div>
+      <div>
+        <h1>api-contract-test</h1>
+        <div class="sub" data-lang="ar">دليل التعريف لفريق الجودة</div>
+        <div class="sub" data-lang="en">Onboarding for the QA team</div>
+      </div>
+    </div>
+    <div class="toggle" role="group" aria-label="language">
+      <button id="btn-ar" class="active" onclick="setLang('ar')">العربية</button>
+      <button id="btn-en" onclick="setLang('en')">English</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="tag" data-lang="ar">اختبار عقود الـ API</span>
+    <span class="tag" data-lang="en">API CONTRACT TESTING</span>
+    <h2 data-lang="ar">نختبر طبقة الـ API كعقد — بمعزل عن الواجهة</h2>
+    <h2 data-lang="en">Test the API layer as a contract — independent of the UI</h2>
+    <p data-lang="ar">أداة تتأكد أن الـ backend يُرجِع ويفرض ما اتفقنا عليه فعلاً، فتمسك الأعطال الصامتة قبل أن تصل لمستخدم أو لتكامل خارجي.</p>
+    <p data-lang="en">A skill that verifies the backend actually returns and enforces what we agreed on — catching silent breaks before they reach a user or a downstream integration.</p>
+  </div>
+
+  <!-- GAP -->
+  <section>
+    <h3><span class="dot"></span><span data-lang="ar">المشكلة التي نعيشها اليوم (الفجوة)</span><span data-lang="en">The gap it fills</span></h3>
+    <p data-lang="ar">أغلب اختباراتنا تبدأ من الواجهة: نفتح الشاشة، نضغط، ونرى النتيجة. لكن الواجهة <b>تُخفي</b> أعطال الـ API أو تُظهرها متأخرة:</p>
+    <p data-lang="en">Most of our testing is UI-first: open the screen, click, see the result. But the UI <b>hides</b> API breaks or surfaces them late:</p>
+    <ul data-lang="ar">
+      <li>حقل في الـ response <b>تغيّر اسمه أو نوعه</b> → الواجهة لا تنهار، لكن الموبايل أو خدمة أخرى تنكسر بصمت.</li>
+      <li><b>status code خاطئ</b> (مثلاً <code>200</code> بدل <code>403</code>) → الواجهة تخفيه، لكن الصلاحية مكسورة فعلاً.</li>
+      <li>مستخدم يقرأ <b>طلب عميل آخر</b> بتغيير رقم في الرابط — تسرّب بيانات لا تُظهره الواجهة أبداً.</li>
+      <li>نداء دفع تكرّر فسحب المبلغ <b>مرّتين</b> — لا تراه في اختبار الشاشة العادي.</li>
+    </ul>
+    <ul data-lang="en">
+      <li>A response field is <b>renamed or retyped</b> → the UI survives, but mobile or another service breaks silently.</li>
+      <li>A <b>wrong status code</b> (e.g. <code>200</code> instead of <code>403</code>) → hidden by the UI, but the permission is actually broken.</li>
+      <li>A user reads <b>another customer's order</b> by changing an id in the URL — a data leak the UI never shows.</li>
+      <li>A payment call repeats and charges <b>twice</b> — invisible in ordinary screen testing.</li>
+    </ul>
+    <p data-lang="ar"><b>الخلاصة:</b> تغطيتنا ممتازة لـ «ما يراه المستخدم»، وفجوتنا في «ما يحدث فعلاً تحت الواجهة». هذه الـ skill تسدّها بالضبط.</p>
+    <p data-lang="en"><b>Bottom line:</b> we cover "what the user sees" well; the gap is "what actually happens under the hood." This skill closes it.</p>
+  </section>
+
+  <!-- DIAGRAM (inline SVG = fully self-contained & sharable) -->
+  <section>
+    <h3><span class="dot"></span><span data-lang="ar">أين تقع هذه الـ skill</span><span data-lang="en">Where this skill sits</span></h3>
+    <div class="diagram">
+      <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="layers diagram">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#4f9dff"/><stop offset="1" stop-color="#7c5cff"/>
+          </linearGradient>
+        </defs>
+        <!-- UI layer -->
+        <rect x="40" y="30" width="680" height="46" rx="10" fill="#1f2a40" stroke="#2b3a55"/>
+        <text x="380" y="59" fill="#9fb0c9" font-size="15" text-anchor="middle" font-family="sans-serif">UI / Screens  —  covered by UI tests</text>
+        <!-- arrow -->
+        <line x1="380" y1="80" x2="380" y2="104" stroke="#2b3a55" stroke-width="2"/>
+        <polygon points="380,112 374,102 386,102" fill="#2b3a55"/>
+        <!-- API layer (highlighted) -->
+        <rect x="40" y="116" width="680" height="56" rx="12" fill="url(#g1)"/>
+        <text x="380" y="142" fill="#04122b" font-size="16" font-weight="700" text-anchor="middle" font-family="sans-serif">API CONTRACT  ←  api-contract-test</text>
+        <text x="380" y="161" fill="#04122b" font-size="12" text-anchor="middle" font-family="sans-serif">schema · status · authZ/IDOR · idempotency · pagination · input · drift</text>
+        <!-- arrow -->
+        <line x1="380" y1="176" x2="380" y2="196" stroke="#2b3a55" stroke-width="2"/>
+        <polygon points="380,204 374,194 386,194" fill="#2b3a55"/>
+        <!-- DB -->
+        <rect x="240" y="206" width="280" height="28" rx="8" fill="#172033" stroke="#2b3a55"/>
+        <text x="380" y="225" fill="#9fb0c9" font-size="13" text-anchor="middle" font-family="sans-serif">Database / Services</text>
+      </svg>
+    </div>
+    <p data-lang="ar" style="color:var(--muted);text-align:center;font-size:13px;margin-top:6px">الطبقة المضيئة هي ما تختبره هذه الـ skill — الطبقة التي لا تراها الواجهة.</p>
+    <p data-lang="en" style="color:var(--muted);text-align:center;font-size:13px;margin-top:6px">The highlighted layer is what this skill tests — the layer the UI can't see.</p>
+  </section>
+
+  <!-- WHY USE -->
+  <section>
+    <h3><span class="dot"></span><span data-lang="ar">لماذا يجب أن تستخدمها</span><span data-lang="en">Why you should use it</span></h3>
+    <div class="grid" data-lang="ar">
+      <div class="benefit"><b>تكشف الأعطال الصامتة عند مصدرها</b><span>تمسك drift العقد قبل أن يصل لمستخدم أو لتكامل خارجي.</span></div>
+      <div class="benefit"><b>تثبت الصلاحيات أسرع وأدقّ</b><span>فحص الـ authorization على مستوى الـ API أوثق من النقر عبر عشر شاشات.</span></div>
+      <div class="benefit"><b>خفيفة وسريعة</b><span>طلبات HTTP فقط — بلا متصفّح ولا جهاز — فتُعاد بسهولة كل سبرنت.</span></div>
+      <div class="benefit"><b>تحمي المال والثقة</b><span>تمسك الدفع المزدوج، تسرّب البيانات (IDOR)، وكسر العقود بين الخدمات.</span></div>
+    </div>
+    <div class="grid" data-lang="en">
+      <div class="benefit"><b>Catches silent breaks at the source</b><span>Spots contract drift before it reaches a user or integration.</span></div>
+      <div class="benefit"><b>Proves authorization faster</b><span>API-tier authZ checks are more reliable than clicking through screens.</span></div>
+      <div class="benefit"><b>Light and fast</b><span>HTTP only — no browser, no device — easy to repeat every sprint.</span></div>
+      <div class="benefit"><b>Protects money and trust</b><span>Catches double-charges, data leaks (IDOR), and broken service contracts.</span></div>
+    </div>
+  </section>
+
+  <!-- DIMENSIONS -->
+  <section>
+    <h3><span class="dot"></span><span data-lang="ar">ما الذي تفحصه (الأبعاد السبعة)</span><span data-lang="en">What it checks (7 dimensions)</span></h3>
+    <ol class="dims" data-lang="ar">
+      <li><b>مطابقة الـ Schema</b> — <span>هل الـ response بنفس الشكل المتفق عليه؟</span></li>
+      <li><b>عقد الـ Status والأخطاء</b> — <span>هل الأكواد صحيحة وشكل الخطأ ثابت؟</span></li>
+      <li><b>المصادقة والصلاحيات + IDOR/BOLA</b> — <span>هل يصل مستخدم لما ليس له؟</span></li>
+      <li><b>Idempotency</b> — <span>هل تكرار الكتابة يطبّقها مرّتين (دفع مزدوج)؟</span></li>
+      <li><b>الترقيم والتصفية</b> — <span>هل الحدود والعدّادات تتصرّف صح؟</span></li>
+      <li><b>حدود الإدخال</b> — <span>هل المدخلات الخاطئة تُرفض بأمان دون تسريب؟</span></li>
+      <li><b>التغيّر مقابل الأساس</b> — <span>هل كُسر شيء مقابل الـ baseline؟</span></li>
+    </ol>
+    <ol class="dims" data-lang="en">
+      <li><b>Schema conformance</b> — <span>Does the response match the agreed shape?</span></li>
+      <li><b>Status & error contract</b> — <span>Right codes and a consistent error body?</span></li>
+      <li><b>AuthN/AuthZ + IDOR/BOLA</b> — <span>Can a user reach what isn't theirs?</span></li>
+      <li><b>Idempotency</b> — <span>Does a repeated write double-apply (double charge)?</span></li>
+      <li><b>Pagination & filtering</b> — <span>Do limits and counts behave?</span></li>
+      <li><b>Input boundaries</b> — <span>Are bad inputs rejected safely, no leak?</span></li>
+      <li><b>Versioning drift</b> — <span>Did anything break vs the baseline?</span></li>
+    </ol>
+    <div class="verdicts">
+      <span class="pill good" data-lang="ar">pass — سليم</span><span class="pill good" data-lang="en">pass — healthy</span>
+      <span class="pill warn" data-lang="ar">drift — تغيّر يحتاج انتباه</span><span class="pill warn" data-lang="en">drift — needs attention</span>
+      <span class="pill bad" data-lang="ar">break — مكسور ويضرّ</span><span class="pill bad" data-lang="en">break — broken & harmful</span>
+    </div>
+  </section>
+
+  <!-- WHEN / WHEN NOT -->
+  <section>
+    <h3><span class="dot"></span><span data-lang="ar">متى تستخدمها — ومتى لا</span><span data-lang="en">When to use — and when not</span></h3>
+    <div class="twocol">
+      <div class="box do">
+        <h4 data-lang="ar">✅ استخدمها عندما</h4><h4 data-lang="en">✅ Use it when</h4>
+        <ul data-lang="ar"><li>تفحص endpoints مقابل OpenAPI.</li><li>تتأكد من صلاحية (403 مش 200).</li><li>تتحقق من دفع غير مكرّر.</li><li>تفحص عقد الـ backend قبل الإطلاق.</li></ul>
+        <ul data-lang="en"><li>Validating endpoints vs OpenAPI.</li><li>Checking a permission (403 not 200).</li><li>Verifying non-duplicate payments.</li><li>Checking the backend contract pre-release.</li></ul>
+      </div>
+      <div class="box dont">
+        <h4 data-lang="ar">❌ لا تستخدمها لـ</h4><h4 data-lang="en">❌ Don't use it for</h4>
+        <ul data-lang="ar"><li>اختبار الأداء/الحِمل.</li><li>اختبار اختراق كامل.</li><li>بديل عن اختبار الواجهة (هي مكمّلة).</li></ul>
+        <ul data-lang="en"><li>Load/performance testing.</li><li>A full penetration test.</li><li>Replacing UI testing (it complements it).</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- START -->
+  <section>
+    <h3><span class="dot"></span><span data-lang="ar">كيف تبدأ خلال 3 خطوات</span><span data-lang="en">Get started in 3 steps</span></h3>
+    <ol class="steps" data-lang="ar">
+      <li>اقرأ هذا الملف ثم <code>SKILL.md</code> لفهم سير العمل والحدود.</li>
+      <li>جهّز: رابط staging مصرّح به + طريقة مصادقة + حسابات/أدوار. <b>الأسرار في متغيّرات البيئة فقط.</b></li>
+      <li>شغّلها على endpoint واحد أولاً (مثل <code>GET /orders/{id}</code> لـ schema + IDOR)، ثم وسّع.</li>
+    </ol>
+    <ol class="steps" data-lang="en">
+      <li>Read this file, then <code>SKILL.md</code> for the workflow and boundaries.</li>
+      <li>Prepare: an authorized staging URL + auth method + test accounts/roles. <b>Secrets in env vars only.</b></li>
+      <li>Run one endpoint first (e.g. <code>GET /orders/{id}</code> for schema + IDOR), then widen.</li>
+    </ol>
+    <p data-lang="ar" style="margin-top:10px;color:var(--muted)">مثال محلول خطوة بخطوة في <code>references/example-run.md</code>.</p>
+    <p data-lang="en" style="margin-top:10px;color:var(--muted)">A full worked example is in <code>references/example-run.md</code>.</p>
+  </section>
+
+  <!-- SAFETY -->
+  <section class="safety">
+    <h3><span class="dot"></span><span data-lang="ar">قواعد الأمان</span><span data-lang="en">Safety rules</span></h3>
+    <ul data-lang="ar" style="list-style:none;padding:0">
+      <li><span class="x">✕</span> لا تشغّل نداءات تُعدّل البيانات على production — staging فقط.</li>
+      <li><span class="x">✕</span> لا تكتب tokens أو مفاتيح في الريبو أو الأدلة — تُقرأ من البيئة وتُعتّم.</li>
+      <li><span class="ok">✓</span> كل نتيجة break/drift تحمل دليلاً (request + response معتّم + أثر تجاري).</li>
+    </ul>
+    <ul data-lang="en" style="list-style:none;padding:0">
+      <li><span class="x">✕</span> Never run mutating calls against production — staging only.</li>
+      <li><span class="x">✕</span> Never put tokens or keys in the repo or evidence — read from env, redact.</li>
+      <li><span class="ok">✓</span> Every break/drift carries evidence (request + redacted response + business impact).</li>
+    </ul>
+  </section>
+
+  <footer>
+    <span data-lang="ar">api-contract-test · skill مستقل لاختبار عقود الـ API · رخصة MIT</span>
+    <span data-lang="en">api-contract-test · a standalone API contract testing skill · MIT licensed</span>
+  </footer>
+
+</div>
+
+<script>
+  function setLang(lang){
+    document.body.setAttribute('data-active', lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+    document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  }
+</script>
+</body>
+</html>
