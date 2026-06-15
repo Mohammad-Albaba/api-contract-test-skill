@@ -64,13 +64,12 @@ If any required item is missing, pause before active checks and ask one focused 
 
 ## Control Plane
 
-API requests are made over HTTP — no browser or device is required, which makes this workflow light and fast. Prefer, in order:
+API requests are made over HTTP — no browser or device is required, which makes this workflow light and fast. **Every verdict must come from a fresh live call made this run** — captured pairs from prior runs are planning input only (they tell you what to expect and how to shape the call), never a substitute for re-driving the request. If a needed call cannot be driven live this run, report `BLOCKED` with the reason rather than falling back to a cached result. Prefer, in order:
 
 1. A configured API/HTTP MCP server or HTTP client tool, if available in the runtime.
-2. Captured request/response pairs reused from prior runs, when re-driving live calls is undesirable.
-3. Direct authenticated HTTP requests via the runtime's request capability, using credentials resolved from env/secrets only.
+2. Direct authenticated HTTP requests via the runtime's request capability, using credentials resolved from env/secrets only.
 
-Record the auth method used (role/tenant, not the secret) in the run evidence.
+Prior captured request/response pairs may seed expectations or replay setup, but the result you classify must be a fresh response from this run. Record the auth method used (role/tenant, not the secret) in the run evidence.
 
 ## Contract Dimensions
 
@@ -82,7 +81,7 @@ For each in-scope endpoint, evaluate the dimensions that apply and label each re
 4. **Idempotency & side effects** — repeated writes with the same idempotency key do not double-apply (no double charge, no duplicate order).
 5. **Pagination & filtering** — limits/offsets/cursors behave; no over-fetch; counts and `next` links are consistent.
 6. **Input boundaries** — required-field omission, wrong types, oversize payloads, and injection-shaped input are rejected gracefully (no `500`, no leak in error text).
-7. **Versioning / drift vs baseline** — compare against the last saved contract baseline; flag breaking changes (removed field, narrowed type, changed status) vs additive ones.
+7. **Versioning / drift vs baseline** — capture the current response with a fresh live call this run, then diff it against the last saved contract baseline; flag breaking changes (removed field, narrowed type, changed status) vs additive ones. The saved baseline is the comparison reference, never the verdict — never diff two saved files and call it a result.
 
 Scope to the smallest relevant set first; widen only if asked or if risk is obvious. If coverage is bounded (top-N endpoints, no mutation), state plainly what was not tested — silent truncation reads as full coverage when it is not.
 
@@ -127,6 +126,8 @@ contracts/<service>/runs/<timestamp>/ # captured req/resp + findings
 ```
 
 Treat a removed/renamed field or a narrowed type as **breaking**; an added optional field as **additive**.
+
+The baseline is comparison input, never proof — a verdict always requires fresh live responses from this run. If a run cannot complete (target unreachable, auth fails, scope blocked), report `BLOCKED` with the reason; do not fall back to the baseline or a prior run as the answer.
 
 ## Boundaries
 

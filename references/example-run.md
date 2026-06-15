@@ -45,16 +45,26 @@ Expected: 403 Forbidden
 - `limit=50` → `200`, 50 items, valid `next` cursor → **pass**
 - `limit=99999` → capped at `max_limit: 100`, no over-fetch → **pass**
 
+### `DELETE /admin/orders/{id}` — AuthZ (role boundary) → could not complete
+
+- Goal: confirm `user` role gets `403`, only `admin` may delete.
+- The `$ADMIN_TOKEN` returned `401 Invalid/Expired Token` on every call, so the admin-allowed baseline could not be established this run.
+- **We do NOT fall back to a prior run's result.** With no fresh admin response, this check is **`BLOCKED`**, not pass/fail.
+
+> Plain-language impact: we cannot yet say whether the admin delete boundary holds — the test could not be driven live. Re-run with a valid admin token to get a verdict.
+
 ## 3. Report
 
-**Verdict:** breaking changes found (2).
+**Verdict:** breaking changes found (2); 1 check **BLOCKED**.
+**Calls run live this run:** yes for the 3 completed checks; the admin-role check could not be driven (expired token) → BLOCKED.
 
 | Endpoint | Dimension | Result | Business impact | Evidence ref |
 |---|---|---|---|---|
 | `GET /orders/{id}` | AuthZ (IDOR) | break | Any user reads another's order | runs/ts/idor-orders.txt |
 | `POST /payments` | Idempotency | break | Retry can double-charge | runs/ts/payments-retry.txt |
 | `GET /products` | Schema/Pagination | pass | — | — |
+| `DELETE /admin/orders/{id}` | AuthZ (role) | BLOCKED | Admin boundary unverified — run could not complete | runs/ts/admin-delete-401.txt |
 
 **Top risk:** the IDOR on `GET /orders/{id}` — it exposes other customers' data with no special tooling. Fix: enforce owner/admin object-level authorization server-side; add a regression check that `user_b` → `403` on `user_a`'s order.
 
-**Next step:** file both breaks; add IDOR + idempotency checks to the regression baseline.
+**Next step:** file both breaks; add IDOR + idempotency checks to the regression baseline; re-run the BLOCKED admin-role check with a valid admin token — do not close it on the strength of any earlier run.

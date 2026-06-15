@@ -226,7 +226,10 @@
       <span class="pill good" data-lang="ar">pass — سليم</span><span class="pill good" data-lang="en">pass — healthy</span>
       <span class="pill warn" data-lang="ar">drift — تغيّر يحتاج انتباه</span><span class="pill warn" data-lang="en">drift — needs attention</span>
       <span class="pill bad" data-lang="ar">break — مكسور ويضرّ</span><span class="pill bad" data-lang="en">break — broken & harmful</span>
+      <span class="pill" style="color:var(--muted);border-color:var(--line)" data-lang="ar">BLOCKED — التشغيل لم يكتمل (يُذكر السبب)</span><span class="pill" style="color:var(--muted);border-color:var(--line)" data-lang="en">BLOCKED — run could not complete (reason reported)</span>
     </div>
+    <p data-lang="ar" style="margin-top:12px;color:var(--muted)"><b>مبدأ أساسي:</b> كل حكم يجي من نداء حيّ جديد في هذا التشغيل. تاريخ التشغيلات والـ baseline يخطّطان المسار، لكنهما ليسا الحكم — وإذا التشغيل ما اكتمل، بلّغ <code>BLOCKED</code> بالسبب بدل الرجوع لنتيجة مخزّنة.</p>
+    <p data-lang="en" style="margin-top:12px;color:var(--muted)"><b>Core principle:</b> every verdict comes from a fresh live call this run. Prior runs and the baseline plan the path but are never the verdict — if a run can't complete, report <code>BLOCKED</code> with the reason instead of falling back to a cached result.</p>
   </section>
 
   <!-- WHEN / WHEN NOT -->
@@ -244,6 +247,39 @@
         <ul data-lang="en"><li>Load/performance testing.</li><li>A full penetration test.</li><li>Replacing UI testing (it complements it).</li></ul>
       </div>
     </div>
+  </section>
+
+  <!-- EXAMPLE OUTPUT -->
+  <section>
+    <h3><span class="dot"></span><span data-lang="ar">مثال على المخرجات (لقطة من تشغيل سابق)</span><span data-lang="en">Sample output (snapshot of a past run)</span></h3>
+    <p data-lang="ar">مقتطف من تشغيل فعلي على API تجريبي عام (<code>dummyjson.com</code>) — نداءات HTTP حقيقية بدون أي تعديل على بيانات. الهدف توضيح <b>شكل</b> النتيجة:</p>
+    <p data-lang="en">An excerpt from a real run against a public test API (<code>dummyjson.com</code>) — live HTTP calls, no data mutated. It shows what the result <b>looks like</b>:</p>
+    <div class="box dont" style="border-color:rgba(245,185,69,.5);background:rgba(245,185,69,.06)">
+      <p data-lang="ar" style="margin:0"><b>⚠️ لقطة لحظية بتاريخ 2026-06-15 — وليست حكمًا حاليًا.</b> الـ API التجريبي قد يتغيّر، والأرقام أدناه صحّت لحظة التشغيل فقط. تاريخ التشغيلات يخطّط المسار، لا يُغني عن تشغيل جديد — للحكم الحالي شغّل الـ skill بنفسك على نداءات حيّة.</p>
+      <p data-lang="en" style="margin:0"><b>⚠️ A snapshot from 2026-06-15 — not a current verdict.</b> The test API may change, and these numbers were only true at run time. Prior run history plans the path, it never replaces a fresh run — for the current verdict, run the skill yourself against live calls.</p>
+    </div>
+    <p style="margin:14px 0"><span class="pill warn" data-lang="ar">الحكم (لحظة التشغيل): وُجد drift + كسر واحد لافت</span><span class="pill warn" data-lang="en">Verdict (at run time): drift + one notable break</span></p>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="box dont">
+        <span class="pill bad">break</span>
+        <p data-lang="ar" style="margin:8px 0 0"><code>GET /auth/me</code> — يُرجِع <b>كلمة المرور كنص صريح</b> داخل الـ response. أي رد واحد مُسجَّل = استيلاء على الحساب.</p>
+        <p data-lang="en" style="margin:8px 0 0"><code>GET /auth/me</code> — returns the user's <b>plaintext password</b> in the body. One logged response = account takeover.</p>
+      </div>
+      <div class="box" style="background:rgba(245,185,69,.06);border-color:rgba(245,185,69,.4)">
+        <span class="pill warn">drift</span>
+        <p data-lang="ar" style="margin:8px 0 0"><code>GET /products?limit=0</code> — يرجّع <b>كل الـ 194 سجل</b> بدل حدّ مضبوط (سحب كامل بنداء واحد). كذلك المسار المجهول يرجّع HTML بدل خطأ JSON.</p>
+        <p data-lang="en" style="margin:8px 0 0"><code>GET /products?limit=0</code> — returns <b>all 194 records</b> instead of a cap (full pull in one call). Also: unknown routes return HTML instead of a JSON error.</p>
+      </div>
+      <div class="box do">
+        <span class="pill good">pass</span>
+        <p data-lang="ar" style="margin:8px 0 0">المصادقة سليمة (<code>401</code> بدون token، <code>200</code> معه)، وحدود الإدخال محترمة (حقل ناقص/بيانات خاطئة/JSON مشوّه → <code>400</code> بدون أي <code>500</code>).</p>
+        <p data-lang="en" style="margin:8px 0 0">Auth holds (<code>401</code> without token, <code>200</code> with), and input boundaries are respected (missing field / bad creds / malformed JSON → <code>400</code>, never <code>500</code>).</p>
+      </div>
+    </div>
+
+    <p data-lang="ar" style="margin-top:12px;color:var(--muted)"><b>ولماذا يهمّنا؟</b> نفس الأبعاد تنطبق على مشاريعنا — بدّل الـ base URL والمصادقة بـ staging تبعنا، وبتطلع نفس الجدول على عقود الـ checkout / orders / payments (مع فحص IDOR والدفع المزدوج اللي ما بينطبقوا على هذا الـ API التجريبي).</p>
+    <p data-lang="en" style="margin-top:12px;color:var(--muted)"><b>Why it matters:</b> the same dimensions apply to our projects — swap in our staging base URL + auth and you get this same table for our checkout / orders / payments contracts (plus IDOR and double-charge checks that don't apply to this test API).</p>
   </section>
 
   <!-- START -->
