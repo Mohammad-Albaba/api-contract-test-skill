@@ -61,7 +61,10 @@ SKILL.md                          # the skill definition (frontmatter + workflow
 references/
   contract-dimensions.md          # expanded per-dimension checklist
   report-template.md              # report skeleton
+  example-run.md                  # full worked example
 contracts/example/baseline.json   # example contract baseline
+.github/workflows/ci.yml          # validation CI
+CONTRIBUTING.md
 ```
 
 ## License

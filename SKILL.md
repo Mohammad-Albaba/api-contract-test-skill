@@ -139,3 +139,4 @@ Treat a removed/renamed field or a narrowed type as **breaking**; an added optio
 
 - `references/contract-dimensions.md` — expanded checklist per dimension with example checks.
 - `references/report-template.md` — the report skeleton to fill in.
+- `references/example-run.md` — a full worked example against the sample baseline.

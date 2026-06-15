@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate skill repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          set -e
+          for f in SKILL.md README.md LICENSE references/contract-dimensions.md references/report-template.md; do
+            test -f "$f" || { echo "::error::missing required file: $f"; exit 1; }
+          done
+          echo "All required files present."
+
+      - name: Validate SKILL.md frontmatter
+        run: |
+          set -e
+          head -1 SKILL.md | grep -q '^---$' || { echo "::error::SKILL.md must start with YAML frontmatter (---)"; exit 1; }
+          grep -q '^name: api-contract-test' SKILL.md || { echo "::error::SKILL.md frontmatter missing name: api-contract-test"; exit 1; }
+          grep -q '^description:' SKILL.md || { echo "::error::SKILL.md frontmatter missing description"; exit 1; }
+          echo "Frontmatter OK."
+
+      - name: Validate JSON files
+        run: |
+          set -e
+          found=0
+          while IFS= read -r f; do
+            found=1
+            python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" \
+              && echo "valid JSON: $f" \
+              || { echo "::error::invalid JSON: $f"; exit 1; }
+          done < <(find . -name '*.json' -not -path './.git/*')
+          [ "$found" -eq 0 ] && echo "no JSON files to validate" || true
+
+      - name: Lint Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: '**/*.md'
+        continue-on-error: true
+
+      - name: Secret-leak guard
+        run: |
+          set -e
+          # Fail if anything looks like a committed token/secret.
+          if grep -rEn '(ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----)' \
+              --include='*.md' --include='*.json' --include='*.yml' --include='*.yaml' . ; then
+            echo "::error::possible committed secret found"; exit 1
+          fi
+          echo "No obvious committed secrets."
