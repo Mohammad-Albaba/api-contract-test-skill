@@ -1,0 +1,14 @@
+# Secrets — never commit
+.env
+.env.*
+*.secret
+secrets.json
+
+# Run evidence (captured req/resp may contain sensitive data) — keep local by default
+contracts/**/runs/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log

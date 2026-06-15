@@ -1,0 +1,56 @@
+{
+  "service": "example-orders-api",
+  "base_url": "https://staging.example.com/api",
+  "version": "v1",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/orders/{id}",
+      "auth": "bearer",
+      "success_status": 200,
+      "schema": {
+        "type": "object",
+        "required": ["id", "user_id", "status", "total", "currency", "items"],
+        "properties": {
+          "id": { "type": "string" },
+          "user_id": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "paid", "shipped", "cancelled"] },
+          "total": { "type": "number" },
+          "currency": { "type": "string" },
+          "items": { "type": "array" }
+        }
+      },
+      "authz": {
+        "object_level": "owner_or_admin",
+        "expected_forbidden_status": 403
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/payments",
+      "auth": "bearer",
+      "success_status": 201,
+      "idempotency": {
+        "header": "Idempotency-Key",
+        "repeat_must_not_double_apply": true
+      },
+      "schema": {
+        "type": "object",
+        "required": ["payment_id", "order_id", "amount", "status"],
+        "properties": {
+          "payment_id": { "type": "string" },
+          "order_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "status": { "type": "string", "enum": ["authorized", "captured", "failed"] }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/products",
+      "auth": "optional",
+      "success_status": 200,
+      "pagination": { "style": "limit_offset", "max_limit": 100 }
+    }
+  ]
+}
