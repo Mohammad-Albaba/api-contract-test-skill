@@ -24,7 +24,8 @@ A worked example showing the workflow end to end against the sample baseline in
 > Plain-language impact: any logged-in user can read another customer's order — name, items, and total — by changing the id in the URL. This is a data-leak and a trust/compliance risk.
 
 Evidence (redacted):
-```
+
+```text
 GET /orders/ord_100
 Authorization: Bearer <USER_B_TOKEN redacted>
 → 200 OK

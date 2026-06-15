@@ -4,6 +4,7 @@
     "default": true,
     "MD013": false, // line length — prose and tables run long
     "MD033": false, // inline HTML — allowed in tables/notes
+    "MD040": false, // fenced blocks need not declare a language (sample req/resp)
     "MD041": false  // first line need not be a top-level heading (frontmatter)
   },
   "globs": ["**/*.md"],
