@@ -83,6 +83,19 @@
   .box.do{background:rgba(55,211,153,.06);border-color:rgba(55,211,153,.4)}
   .box.dont{background:rgba(255,107,107,.06);border-color:rgba(255,107,107,.4)}
   .box h4{margin:0 0 8px;font-size:15px}
+  .intro{display:flex;gap:12px;align-items:flex-start;background:var(--chip);
+    border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:18px}
+  .intro .ic{font-size:22px;flex:0 0 auto;line-height:1.4}
+  .intro b{color:var(--ink)}
+  .intake{list-style:none;counter-reset:k;padding:0;margin:10px 0 0;display:grid;gap:10px}
+  .intake li{counter-increment:k;background:var(--card2);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px 12px 48px;position:relative}
+  html[dir=rtl] .intake li{padding:12px 48px 12px 14px}
+  .intake li::before{content:counter(k);position:absolute;inset-inline-start:12px;top:12px;
+    width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;
+    display:grid;place-items:center;font-weight:800;font-size:13px}
+  .intake b{color:var(--ink)} .intake span{color:var(--muted);font-size:14px}
+  .intake-note{color:var(--muted);font-size:14px;margin-top:12px}
   .steps{list-style:none;counter-reset:s;padding:0;margin:0;display:grid;gap:10px}
   .steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start}
   .steps li::before{
@@ -130,6 +143,36 @@
     <p data-lang="ar">أداة تتأكد أن الـ backend يُرجِع ويفرض ما اتفقنا عليه فعلاً، فتمسك الأعطال الصامتة قبل أن تصل لمستخدم أو لتكامل خارجي.</p>
     <p data-lang="en">A skill that verifies the backend actually returns and enforces what we agreed on — catching silent breaks before they reach a user or a downstream integration.</p>
   </div>
+
+  <!-- INTRO LINE (shown on invocation) -->
+  <div class="intro">
+    <span class="ic">🔌</span>
+    <div>
+      <p data-lang="ar" style="margin:0"><b>عند الاستدعاء، الـ skill تقول أولاً ماذا تفعل:</b> «أختبر الـ API مباشرةً كعقد — schema، أكواد الحالة، الصلاحيات/IDOR، idempotency، الترقيم، حدود الإدخال، والـ drift — بمعزل عن أي واجهة، على هدف staging آمن. أولاً أحتاج أعرف <i>ماذا أختبر</i> و<i>أين</i>.»</p>
+      <p data-lang="en" style="margin:0"><b>On invocation, the skill first states what it does:</b> "I test your API directly as a contract — schema, status codes, authZ/IDOR, idempotency, pagination, input limits, drift — independent of any UI, on a safe staging target. First I need to know <i>what to test</i> and <i>where</i>."</p>
+    </div>
+  </div>
+
+  <!-- INTAKE (asked before starting) -->
+  <section>
+    <h3><span class="dot"></span><span data-lang="ar">السؤال الذي تطرحه قبل البدء</span><span data-lang="en">The question it asks before starting</span></h3>
+    <p data-lang="ar"><b>«كيف ستعطيني الـ API لأختبره؟»</b> — اختر واحداً:</p>
+    <p data-lang="en"><b>"How will you give me the API to test?"</b> — pick one:</p>
+    <ol class="intake" data-lang="ar">
+      <li><b>مجموعة Postman / Insomnia</b> — <span>أرفِق ملف المجموعة (<code>.json</code>) وأشتقّ منها الـ endpoints والأمثلة.</span></li>
+      <li><b>ملف OpenAPI / Swagger</b> — <span>أرفِق المسار أو الرابط، وأولّد baseline تلقائياً ثم أختبر مقابله.</span></li>
+      <li><b>رابط staging فقط</b> — <span>أعطني الرابط الأساسي وأكتشف السطح، موضّحاً ما يحتاج spec.</span></li>
+      <li><b>baseline محفوظ</b> — <span>أشِر إلى <code>contracts/&lt;service&gt;/baseline.json</code> لإعادة اختبار عقد سابق.</span></li>
+    </ol>
+    <ol class="intake" data-lang="en">
+      <li><b>Postman / Insomnia collection</b> — <span>attach the exported collection (<code>.json</code>); I derive endpoints + examples from it.</span></li>
+      <li><b>OpenAPI / Swagger spec</b> — <span>attach the path/URL; I generate a baseline, then test against it.</span></li>
+      <li><b>Staging base URL only</b> — <span>give me the base URL; I discover the surface and state what still needs a spec.</span></li>
+      <li><b>Existing baseline</b> — <span>point me at <code>contracts/&lt;service&gt;/baseline.json</code> to retest a prior contract.</span></li>
+    </ol>
+    <p class="intake-note" data-lang="ar">ومعها في نفس السؤال: <b>رابط staging مصرّح به</b> + <b>المصادقة</b> (الـ token من متغيّر بيئة فقط) + <b>هل الكتابة مسموحة؟</b> الافتراضي الآمن: قراءة-فقط على أصغر نطاق. لا يُشغّل أي نداء حيّ قبل تأكيد النطاق.</p>
+    <p class="intake-note" data-lang="en">Collected in the same question: an <b>authorized staging URL</b> + <b>auth</b> (token via env var only) + <b>is mutation allowed?</b> Safe default: read-only on the smallest set. No live call runs until scope is confirmed.</p>
+  </section>
 
   <!-- GAP -->
   <section>
