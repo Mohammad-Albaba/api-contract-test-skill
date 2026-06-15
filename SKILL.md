@@ -6,6 +6,14 @@ license: MIT
 
 # API Contract Test
 
+**On invocation, first tell the user in one line what this skill does, then ask the intake question below before any active call.** Opening line to show:
+
+> 🔌 **API Contract Test** — I test your API directly as a contract (schema, status codes, authZ/IDOR, idempotency, pagination, input limits, drift), independent of any UI, on a safe staging target. First I need to know *what to test* and *where*.
+
+Then ask the **Intake** question (see "Intake — ask before starting" below) to collect the spec/collection, the staging base URL, and auth — and do not run any live call until scope is confirmed.
+
+---
+
 A workflow for testing an HTTP/JSON API layer **as a contract**, independent of any user interface. It verifies what the backend actually returns and enforces — not what a UI happens to render. Use it for web, mobile, and standalone API products.
 
 A silent API break — a renamed field, a leaked record, a double charge — usually hurts trust, money, or integrations long before a human notices it in the UI. This workflow catches those at the source.
@@ -46,6 +54,24 @@ Use the smallest mode that answers the request.
 - `Endpoint path`: the user names specific endpoints or a feature (checkout, profile, admin approval) — test those across the contract dimensions below.
 - `Discovery`: no spec and no named endpoints — derive the surface from a base URL, captured traffic, or docs; list what was found and state what still needs a spec or scope.
 - `Regression retest`: a known contract or prior finding is given — verify only that contract unless new risk is obvious.
+
+## Intake — ask before starting
+
+Before doing anything, present a **single structured question** so the user can hand over the contract source and target in one step. Use the runtime's question UI if available; otherwise ask in plain text. Offer these as the choices for "How will you give me the API to test?":
+
+1. **Postman / Insomnia collection** — attach or give the path to the exported collection (`.json`). I'll derive endpoints + example requests from it.
+2. **OpenAPI / Swagger spec** — attach or give the path/URL to the spec. I'll generate a baseline with `tools/gen_baseline.py`, then test against it.
+3. **Staging base URL only** — give me the base URL (e.g. `https://staging.example.com/api`) and I'll discover/derive the surface, stating what still needs a spec.
+4. **Existing baseline** — point me at a saved `contracts/<service>/baseline.json` to retest against.
+
+Alongside the source, collect in the same intake (with safe defaults offered):
+
+- **Base URL** — staging or an authorized test environment only (**never production for mutating calls**).
+- **Auth** — how to authenticate (bearer token, header, or login flow). **Secrets via env vars only** — e.g. `export TOKEN=…`; never pasted into the repo or the spec.
+- **Mutation allowed?** — may I send POST/PUT/PATCH/DELETE, and against which test records? Default: **read-only** unless told otherwise.
+- **Scope** — which endpoints/feature to focus on first. Default: smallest safe set, then widen.
+
+If the user is unsure, suggest: *"attach your Postman collection or OpenAPI spec + give me a staging base URL and a token in an env var; I'll start read-only on the smallest set."* Do not run any active call until the base URL, auth, and mutation boundary are confirmed — otherwise pause and ask one focused question.
 
 ## Authorization & Scope Gate
 
