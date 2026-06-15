@@ -1,0 +1,14 @@
+{
+  "service": "dummyjson-auto",
+  "base_url": "https://dummyjson.com",
+  "version": "n/a",
+  "endpoints": [
+    { "method": "GET", "path": "/products/{id}", "auth": "none", "success_status": 200,
+      "schema": { "type": "object", "required": ["id","title","price","category","stock"],
+        "properties": { "id":{"type":"number"}, "title":{"type":"string"}, "price":{"type":"number"},
+          "category":{"type":"string"}, "stock":{"type":"number"} } } },
+    { "method": "GET", "path": "/auth/me", "auth": "bearer", "success_status": 200,
+      "schema": { "type": "object", "required": ["id","username","email"] } },
+    { "method": "POST", "path": "/products/add", "auth": "none", "success_status": 201 }
+  ]
+}

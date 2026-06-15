@@ -66,8 +66,9 @@ If any required item is missing, pause before active checks and ask one focused 
 
 API requests are made over HTTP — no browser or device is required, which makes this workflow light and fast. **Every verdict must come from a fresh live call made this run** — captured pairs from prior runs are planning input only (they tell you what to expect and how to shape the call), never a substitute for re-driving the request. If a needed call cannot be driven live this run, report `BLOCKED` with the reason rather than falling back to a cached result. Prefer, in order:
 
-1. A configured API/HTTP MCP server or HTTP client tool, if available in the runtime.
-2. Direct authenticated HTTP requests via the runtime's request capability, using credentials resolved from env/secrets only.
+1. The bundled executable core (`tools/run_contract.py`, stdlib-only) — generate a baseline with `tools/gen_baseline.py` from an OpenAPI spec, then run the auto-checkable dimensions repeatably. See `tools/README.md`.
+2. A configured API/HTTP MCP server or HTTP client tool, if available in the runtime.
+3. Direct authenticated HTTP requests via the runtime's request capability, using credentials resolved from env/secrets only.
 
 Prior captured request/response pairs may seed expectations or replay setup, but the result you classify must be a fresh response from this run. Record the auth method used (role/tenant, not the secret) in the run evidence.
 
@@ -141,3 +142,4 @@ The baseline is comparison input, never proof — a verdict always requires fres
 - `references/contract-dimensions.md` — expanded checklist per dimension with example checks.
 - `references/report-template.md` — the report skeleton to fill in.
 - `references/example-run.md` — a full worked example against the sample baseline.
+- `tools/` — the stdlib-only executable core: `gen_baseline.py` (OpenAPI → baseline), `run_contract.py` (run dimensions on fresh live calls), `selftest.py` (offline checks). See `tools/README.md`.

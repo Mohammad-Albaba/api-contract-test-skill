@@ -12,3 +12,6 @@ contracts/**/runs/
 .idea/
 .vscode/
 *.log
+
+# executable core
+tools/__pycache__/

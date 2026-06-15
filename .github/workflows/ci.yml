@@ -41,6 +41,15 @@ jobs:
           done < <(find . -name '*.json' -not -path './.git/*')
           [ "$found" -eq 0 ] && echo "no JSON files to validate" || true
 
+      - name: Executable core self-test (offline)
+        run: |
+          set -e
+          for f in tools/contract_lib.py tools/gen_baseline.py tools/run_contract.py tools/selftest.py; do
+            test -f "$f" || { echo "::error::missing tool: $f"; exit 1; }
+          done
+          python3 -m py_compile tools/*.py
+          python3 tools/selftest.py
+
       - name: Lint Markdown
         uses: DavidAnson/markdownlint-cli2-action@v16
         with:
